@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mushroom Dash - KINOKO</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        
+        <!-- Loading Screen -->
+        <div id="screen-loading" class="game-screen active">
+            <div class="logo">KINOKO</div>
+            <h1>Mushroom Dash</h1>
+            <div class="loading-container">
+                <div class="loading-bar">
+                    <div class="loading-progress"></div>
+                </div>
+                <div class="loading-text">Loading game assets... <span id="loading-percentage">0%</span></div>
+            </div>
+            <div class="loading-tips">
+                <p>Tip: Collect mushrooms and chocolate bars for points!</p>
+            </div>
+        </div>
+        
+        <!-- Screens -->
+        <div id="screen-title" class="game-screen">
+            <div class="logo">KINOKO</div>
+            <h1>Mushroom Dash</h1>
+            <div class="character-select">
+                <div class="character" data-character="leo">
+                    <div class="character-sprite leo-idle"></div>
+                    <h3>Leo</h3>
+                    <p>Lion's Mane</p>
+                    <div class="ability">FOCUS</div>
+                </div>
+                <div class="character" data-character="remi">
+                    <div class="character-sprite remi-idle"></div>
+                    <h3>Remi</h3>
+                    <p>Reishi</p>
+                    <div class="ability">SHIELD</div>
+                </div>
+                <div class="character" data-character="spora">
+                    <div class="character-sprite spora-idle"></div>
+                    <h3>Spora</h3>
+                    <p>Cordyceps</p>
+                    <div class="ability">ENERGY</div>
+                </div>
+            </div>
+            <button id="start-button" disabled>Start Game</button>
+            <div class="prize-banner">Top 3 players win KINOKO chocolate!</div>
+            <div class="audio-controls">
+                <button id="music-toggle" class="audio-btn">🔊</button>
+                <button id="sfx-toggle" class="audio-btn">🔔</button>
+            </div>
+            
+            <!-- Debug toggle button -->
+            <div class="debug-toggle-container">
+                <label for="debug-toggle" class="debug-toggle-label">Debug Mode:</label>
+                <input type="checkbox" id="debug-toggle" class="debug-toggle">
+                
+                <!-- Performance selector -->
+                <div class="performance-selector-container">
+                    <label for="performance-selector" class="performance-label">Performance:</label>
+                    <select id="performance-selector" class="performance-selector">
+                        <option value="auto">Auto</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div id="screen-gameplay" class="game-screen">
+            <div class="ui-score">Score: <span id="current-score">0</span></div>
+            <div class="ui-timer">
+                <div class="timer-bar"></div>
+            </div>
+            <div class="ui-combo">
+                <div class="combo-bar"></div>
+            </div>
+            <button id="pause-button">⏸️</button>
+        </div>
+        
+        <div id="screen-power-up" class="game-screen">
+            <div class="power-up-effect">
+                <div class="power-up-character"></div>
+                <div class="power-up-text"></div>
+            </div>
+        </div>
+        
+        <div id="screen-game-end" class="game-screen">
+            <h2>Game Over!</h2>
+            <div class="score-display">
+                <h3>🍫 You collected <span id="final-score">0</span> Kinoko Points!</h3>
+                <div class="items-collected">
+                    <div class="item-count">🧠 × <span id="brain-count">0</span></div>
+                    <div class="item-count">💖 × <span id="heart-count">0</span></div>
+                    <div class="item-count">⚡ × <span id="energy-count">0</span></div>
+                    <div class="item-count">🍫 × <span id="chocolate-count">0</span></div>
+                </div>
+            </div>
+            <div class="character-celebration"></div>
+            <div class="game-end-buttons">
+                <button id="play-again-button">Play Again</button>
+                <button id="share-button">Share Score</button>
+                <button id="contest-button">Enter Weekly Contest</button>
+            </div>
+            <div class="leaderboard-preview">
+                <h4>Weekly Leaderboard</h4>
+                <div id="leaderboard-list"></div>
+            </div>
+        </div>
+        
+        <div id="screen-share" class="game-screen">
+            <div class="share-frame">
+                <div class="share-preview">
+                    <div class="share-score">Score: <span class="share-score-value">0</span></div>
+                    <div class="share-character"></div>
+                </div>
+                <textarea id="share-message">I scored 0 points in Mushroom Dash! 🍄💥</textarea>
+                <div class="share-buttons">
+                    <button id="share-instagram">Instagram</button>
+                    <button id="share-tiktok">TikTok</button>
+                    <button id="share-twitter">Twitter</button>
+                    <button id="share-copy-link">Copy Link</button>
+                </div>
+                <div class="bonus-entry">+1 contest entry when you tag @kinokochocolate</div>
+                <button id="share-return">Back to Game</button>
+            </div>
+        </div>
+        
+        <div id="screen-contest" class="game-screen">
+            <h2>Enter to Win Weekly KINOKO Prize!</h2>
+            <form id="contest-form">
+                <div class="form-field">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-field">
+                    <label for="phone">Phone (optional)</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+                <div class="form-field">
+                    <label for="address">Shipping Address</label>
+                    <textarea id="address" name="address" required></textarea>
+                </div>
+                <div class="form-field checkbox">
+                    <input type="checkbox" id="newsletter" name="newsletter">
+                    <label for="newsletter">Sign up for KINOKO newsletter</label>
+                </div>
+                <div class="form-field checkbox">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">I accept the terms and conditions</label>
+                </div>
+                <button type="submit" id="submit-entry">Submit Entry</button>
+            </form>
+            <div class="entry-counter">You have <span id="entry-count">1</span> entries this week</div>
+            <div class="privacy-notice">Your data will only be used for contest purposes and will not be shared with third parties.</div>
+        </div>
+        
+        <!-- Pause Menu (New) -->
+        <div id="pause-menu" class="overlay-screen">
+            <div class="pause-panel">
+                <h2>Game Paused</h2>
+                <button id="resume-button" class="menu-button">Resume Game</button>
+                <button id="restart-button" class="menu-button">Restart</button>
+                <button id="exit-button" class="menu-button">Exit to Menu</button>
+                <div class="audio-controls">
+                    <button id="music-toggle-pause" class="audio-btn">🔊</button>
+                    <button id="sfx-toggle-pause" class="audio-btn">🔔</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Particle Container -->
+        <div id="particle-container"></div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="score_capture_scripts.js"></script>
+    <script src="game.js"></script>
+</body>
+</html> 
