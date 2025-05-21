@@ -6,6 +6,7 @@ let canvas;
 let ctx;
 let gameActive = false;
 let selectedCharacter = null;
+let selectedEnvironment = 'random';
 let gameTimer;
 let animationFrame;
 let lastTimestamp = 0;
@@ -119,6 +120,7 @@ const gameState = {
         x: 0,
         speed: 5
     },
+    environment: 'forest',
     collectibles: [],
     obstacles: [],
     powerUp: {
@@ -211,6 +213,22 @@ const game = {
         performanceSelector.addEventListener('change', (e) => {
             this.changePerformanceMode(e.target.value);
         });
+
+        // Environment selector
+        const environmentSelector = document.getElementById('environment-selector');
+        if (environmentSelector) {
+            environmentSelector.addEventListener('change', (e) => {
+                selectedEnvironment = e.target.value;
+                localStorage.setItem('mushroom-dash-environment', selectedEnvironment);
+            });
+
+            // Load saved preference
+            const savedEnv = localStorage.getItem('mushroom-dash-environment');
+            if (savedEnv) {
+                selectedEnvironment = savedEnv;
+                environmentSelector.value = savedEnv;
+            }
+        }
         
         // Check if performance mode was previously set
         const savedPerformanceMode = localStorage.getItem('mushroom-dash-performance');
@@ -745,6 +763,14 @@ const game = {
         gameState.powerUp.type = null;
         gameState.powerUp.timeLeft = 0;
         gameState.ui.combo = 0;
+
+        // Choose environment
+        if (selectedEnvironment === 'random') {
+            gameState.environment = Math.random() < 0.5 ? 'forest' : 'kitchen';
+        } else {
+            gameState.environment = selectedEnvironment;
+        }
+        localStorage.setItem('mushroom-dash-environment', selectedEnvironment);
         
         // Validate character selection before starting
         if (!selectedCharacter) {
@@ -892,27 +918,27 @@ const game = {
         // Move background layers at different speeds for parallax effect
         gameState.background.x -= gameState.background.speed;
         
-        // Forest layers
-        const forestBgWidth = canvas.width;
-        const forestLayer1X = gameState.background.x % forestBgWidth;
-        const forestLayer2X = (gameState.background.x * 0.8) % forestBgWidth;
-        const forestLayer3X = (gameState.background.x * 0.5) % forestBgWidth;
+        const env = gameState.environment || 'forest';
+        const bgWidth = canvas.width;
+        const layer1X = gameState.background.x % bgWidth;
+        const layer2X = (gameState.background.x * 0.8) % bgWidth;
+        const layer3X = (gameState.background.x * 0.5) % bgWidth;
         
         try {
-            // Draw forest background with parallax
-            if (assets.backgrounds.forest.layer3) {
-                ctx.drawImage(assets.backgrounds.forest.layer3, forestLayer3X, 0, forestBgWidth, canvas.height);
-                ctx.drawImage(assets.backgrounds.forest.layer3, forestLayer3X + forestBgWidth, 0, forestBgWidth, canvas.height);
+            const bgAssets = assets.backgrounds[env];
+            if (bgAssets.layer3) {
+                ctx.drawImage(bgAssets.layer3, layer3X, 0, bgWidth, canvas.height);
+                ctx.drawImage(bgAssets.layer3, layer3X + bgWidth, 0, bgWidth, canvas.height);
             }
-            
-            if (assets.backgrounds.forest.layer2) {
-                ctx.drawImage(assets.backgrounds.forest.layer2, forestLayer2X, 0, forestBgWidth, canvas.height);
-                ctx.drawImage(assets.backgrounds.forest.layer2, forestLayer2X + forestBgWidth, 0, forestBgWidth, canvas.height);
+
+            if (bgAssets.layer2) {
+                ctx.drawImage(bgAssets.layer2, layer2X, 0, bgWidth, canvas.height);
+                ctx.drawImage(bgAssets.layer2, layer2X + bgWidth, 0, bgWidth, canvas.height);
             }
-            
-            if (assets.backgrounds.forest.layer1) {
-                ctx.drawImage(assets.backgrounds.forest.layer1, forestLayer1X, 0, forestBgWidth, canvas.height);
-                ctx.drawImage(assets.backgrounds.forest.layer1, forestLayer1X + forestBgWidth, 0, forestBgWidth, canvas.height);
+
+            if (bgAssets.layer1) {
+                ctx.drawImage(bgAssets.layer1, layer1X, 0, bgWidth, canvas.height);
+                ctx.drawImage(bgAssets.layer1, layer1X + bgWidth, 0, bgWidth, canvas.height);
             }
         } catch (error) {
             // Catch and handle rendering errors
@@ -1738,6 +1764,18 @@ const game = {
             const characters = document.querySelectorAll('.character');
             characters.forEach(char => char.classList.remove('selected'));
             document.getElementById('start-button').disabled = true;
+
+            // Update high score display
+            const highScoreElem = document.getElementById('high-score');
+            if (highScoreElem) {
+                highScoreElem.textContent = this.scoreManager.getHighScore();
+            }
+
+            // Update environment selector to saved value
+            const envSel = document.getElementById('environment-selector');
+            if (envSel) {
+                envSel.value = selectedEnvironment;
+            }
             
             // Ensure any ongoing game is properly stopped
             if (gameActive) {

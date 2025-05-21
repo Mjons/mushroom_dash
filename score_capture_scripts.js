@@ -139,6 +139,10 @@ class ScoreManager {
       highScore: parseInt(localStorage.getItem(STORAGE_KEYS.highScore) || '0')
     };
   }
+
+  getHighScore() {
+    return parseInt(localStorage.getItem(STORAGE_KEYS.highScore) || '0');
+  }
 }
 
 // Leaderboard Management
