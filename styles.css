@@ -258,6 +258,25 @@ canvas {
     transform: scale(1.1);
 }
 
+.environment-select {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.environment-select label {
+    margin-right: 8px;
+    font-weight: bold;
+    color: #7b3f00;
+}
+
+.environment-select select {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 2px solid #7b3f00;
+}
+
+#start-button {
+
 .leo-idle {
     background-image: url('sprites/leo_idle.png');
 }
@@ -326,6 +345,12 @@ canvas {
     font-weight: bold;
     animation: pulse 2s infinite;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.high-score-display {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #7b3f00;
 }
 
 @keyframes pulse {
